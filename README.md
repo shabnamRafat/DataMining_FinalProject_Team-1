@@ -34,7 +34,7 @@ This project aims to perform clustering analysis to identify distinct patterns o
 ### How to Run the Project
 1. **Clone the repository**:
     ```bash
-    git clone <GitHub-URL>
+    git clone https://github.com/shabnamRafat/DataMining_FinalProject_Team-1.git
     ```
 2. **Install Dependencies**:
     - Create a virtual environment (optional but recommended):
