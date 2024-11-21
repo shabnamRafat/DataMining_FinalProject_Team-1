@@ -37,9 +37,9 @@ This project aims to perform clustering analysis to identify distinct patterns o
     git clone https://github.com/shabnamRafat/DataMining_FinalProject_Team-1.git
     ```
 2. **Install Dependencies**:
-    - Create a virtual environment (optional but recommended):
+    - Create a virtual environment:
       ```bash
-      python -m venv venv
+      python -m venv
       source venv/bin/activate   # On Windows: venv\Scripts\activate
       ```
     - Install required Python libraries:
@@ -52,8 +52,6 @@ This project aims to perform clustering analysis to identify distinct patterns o
       jupyter notebook
       ```
 
-### Contributions
-Each team member should contribute meaningfully to the project. Please make sure to use clear commit messages, branch appropriately, and push your changes regularly. Refer to the [Contribution Guide](CONTRIBUTING.md) for further details.
 
 ### License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
