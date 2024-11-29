@@ -21,6 +21,6 @@ Please use meaningful commit messages. Examples:
 ## Roles and Responsibilities
 Each member should:
 - **Uyemaa Gantulga**: Focus on data pre-processing and cleaning.
-- **Shabnam Rafat Ummey Sawda**: Handle feature engineering and support EDA.
-- **Ismail Sarfaraz**: Perform clustering analysis and validate results.
-- **Jahnavi Vallepalli**: Work on visualizations and final report writing.
+- **Ismail Sarfaraz**: Handle feature engineering and support EDA.
+- **Shabnam Rafat Ummey Sawda** and **Jahnavi Vallepalli**: Perform clustering analysis and validate results.
+- **Everyone**: Draft final report section (own analysis).
