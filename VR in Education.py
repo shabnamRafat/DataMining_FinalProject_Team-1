@@ -176,7 +176,7 @@ from statsmodels.formula.api import ols
 #%%
 
 # Define the columns and values for additional factors
-additional_factors = ['Gender','Grade_Level', 'Field_of_Study', 'Region', 'School_Support_for_VR_in_Curriculum']
+student_attributes = ['Gender','Grade_Level', 'Field_of_Study', 'Region', 'School_Support_for_VR_in_Curriculum']
 
 # Define a function to perform ANOVA test for different factors
 def perform_anova_test(df, distinguishing_features, factor_col):
@@ -187,15 +187,15 @@ def perform_anova_test(df, distinguishing_features, factor_col):
         anova_results[feature] = anova_table
     return anova_results
 
-# Perform ANOVA test for each additional factor
+# Perform ANOVA test for each different factor
 anova_results = {}
-for factor in additional_factors:
+for factor in student_attributes:
     anova_results[factor] = perform_anova_test(vr_in_education, distinguishing_features, factor)
 
 # Display the results with p-values and interpretation
 for factor, results in anova_results.items():
-    print(f"ANOVA results for {factor}:")
-    print("\n")
+    #print(f"ANOVA results for {factor}:")
+    #print("\n")
     for feature, result in results.items():
         print(f"ANOVA results for {feature}:")
         print(result)
