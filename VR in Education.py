@@ -2,13 +2,13 @@
 # Import required libraries
 import pandas as pd
 import numpy as np
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
+import statsmodels.api as sm
+from statsmodels.formula.api import ols
 
 import warnings
 
@@ -31,32 +31,21 @@ print(f"Number of total observations: {len(vr_in_education)}")
 
 ##### **Answer:**
 # <u>Performance Indicators for clustering: </u></br>
-# [ 'Engagement_Level' 'Improvement_in_Learning_Outcomes' 'Perceived_Effectiveness_of_VR' 'Impact_on_Creativity'] 
+# [ 'Engagement_Level' 'Improvement_in_Learning_Outcomes' 'Impact_on_Creativity'] 
 # 
 # <u>Distinguishing features:</u></br> 
-# ['Usage_of_VR_in_Education' 'Hours_of_VR_Usage_Per_Week' 'Instructor_VR_Proficiency' 'Access_to_VR_Equipment' 'School_Support_for_VR_in_Curriculum' 'Collaboration_with_Peers_via_VR'  'Stress_Level_with_VR_Usage' 'Feedback_from_Educators_on_VR' 'Interest_in_Continuing_VR_Based_Learning']
+# ['Usage_of_VR_in_Education' 'Hours_of_VR_Usage_Per_Week' 'Instructor_VR_Proficiency' 'Access_to_VR_Equipment' 'School_Support_for_VR_in_Curriculum' 'Collaboration_with_Peers_via_VR'  'Stress_Level_with_VR_Usage' 'Feedback_from_Educators_on_VR' 'Interest_in_Continuing_VR_Based_Learning' 'Perceived_Effectiveness_of_VR']
 #
 
 
 #%%
 
+# Check the values in performance features
+
 print(f"Engagement Level Values: {np.unique(vr_in_education['Engagement_Level'])}")
 print(f"Improvement in Learning Outcome: {np.unique(vr_in_education['Improvement_in_Learning_Outcomes'])}")
-print(f"Perceived Effectiveness of VR: {np.unique(vr_in_education['Perceived_Effectiveness_of_VR'])}")
 print(f"Impact on Creativity: {np.unique(vr_in_education['Impact_on_Creativity'])}")
 
-
-#%%
-print(f"Usage_of_VR_in_Education: {np.unique(vr_in_education['Usage_of_VR_in_Education'])}")
-print(f"Hours_of_VR_Usage_Per_Week: {np.unique(vr_in_education['Interest_in_Continuing_VR_Based_Learning'])}")
-print(f"Instructor_VR_Proficiency: {np.unique(vr_in_education['Stress_Level_with_VR_Usage'])}")
-print(f"Access_to_VR_Equipment: {np.unique(vr_in_education['Interest_in_Continuing_VR_Based_Learning'])}")
-print(f"School_Support_for_VR_in_Curriculum: {np.unique(vr_in_education['Stress_Level_with_VR_Usage'])}")
-print(f"Collaboration with Peers via VR: {np.unique(vr_in_education['Collaboration_with_Peers_via_VR'])}")
-print(f"Stress Level with VR Usage: {np.unique(vr_in_education['Stress_Level_with_VR_Usage'])}")
-print(f"Feedback from Educators on VR: {np.unique(vr_in_education['Feedback_from_Educators_on_VR'])}")
-print(f"Interest in Continuing VR Based Learning: {np.unique(vr_in_education['Interest_in_Continuing_VR_Based_Learning'])}")
-print(f"Gender: {np.unique(vr_in_education['Region'])}")
 
 
 #%%[markdown]
@@ -64,7 +53,6 @@ print(f"Gender: {np.unique(vr_in_education['Region'])}")
 # Creating High-Performing and Low-Performing Clusters:
 
 #%%
-
 
 # Select performance indicators for clustering
 performance_indicators = ['Engagement_Level', 'Improvement_in_Learning_Outcomes',  'Impact_on_Creativity']
@@ -168,15 +156,11 @@ print(comparison_vr_in_education)
 
 #############################################################################
 
-#%%
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
-
 
 #%%
 
-# Define the columns and values for additional factors
-student_attributes = ['Gender','Grade_Level', 'Field_of_Study', 'Region', 'School_Support_for_VR_in_Curriculum']
+# Define the columns and values for student attributes(group-1)
+student_attributes_group_1 = ['Gender','Grade_Level', 'Field_of_Study', 'Region', 'School_Support_for_VR_in_Curriculum']
 
 # Define a function to perform ANOVA test for different factors
 def perform_anova_test(df, distinguishing_features, factor_col):
@@ -189,7 +173,7 @@ def perform_anova_test(df, distinguishing_features, factor_col):
 
 # Perform ANOVA test for each different factor
 anova_results = {}
-for factor in student_attributes:
+for factor in student_attributes_group_1:
     anova_results[factor] = perform_anova_test(vr_in_education, distinguishing_features, factor)
 
 # Display the results with p-values and interpretation
@@ -210,3 +194,39 @@ for factor, results in anova_results.items():
 # %%[markdown]
 
 ##### **Q4: How do cluster characteristics vary across different regional and support system contexts?**
+
+
+#%%
+
+
+
+# Define the columns and values for student attributes(group-1)
+student_attributes_group_2 = ['Region', 'School_Support_for_VR_in_Curriculum']
+
+# Define a function to perform ANOVA test for different factors
+def perform_anova_test(df, distinguishing_features, factor_col):
+    anova_results = {}
+    for feature in distinguishing_features:
+        model = ols(f'{feature} ~ Cluster + C({factor_col}) + C(Usage_of_VR_in_Education)', data=df).fit()
+        anova_table = sm.stats.anova_lm(model, typ=2)
+        anova_results[feature] = anova_table
+    return anova_results
+
+# Perform ANOVA test for each different factor
+anova_results = {}
+for factor in student_attributes_group_2:
+    anova_results[factor] = perform_anova_test(vr_in_education, distinguishing_features, factor)
+
+# Display the results with p-values and interpretation
+for factor, results in anova_results.items():
+    print(f"ANOVA results for {factor}:")
+    print("\n")
+    for feature, result in results.items():
+        print(f"ANOVA results for {feature}:")
+        #print(result)
+        p_value = result.iloc[0, -1]  # Extract the p-value
+        print(f"P-value: {p_value:.2f}")
+        if p_value < 0.05:
+            print(f"Interpretation: There is a significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
+        else:
+            print(f"Interpretation: There is no significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
