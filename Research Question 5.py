@@ -167,4 +167,3 @@ for cluster in data['Cluster'].unique():
     r2_c = r2_score(y_test_c, y_pred_c)
     
     print(f"Cluster {cluster} - MSE: {mse_c:.2f}, R2: {r2_c:.2f}")
-# %%
