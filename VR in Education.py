@@ -223,7 +223,7 @@ for factor, results in anova_results.items():
     print("\n")
     for feature, result in results.items():
         print(f"ANOVA results for {feature}:")
-        #print(result)
+        print(result)
         p_value = result.iloc[0, -1]  # Extract the p-value
         print(f"P-value: {p_value:.2f}")
         if p_value < 0.05:
