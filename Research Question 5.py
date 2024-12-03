@@ -55,6 +55,9 @@ binary_cols = ['Usage_of_VR_in_Education', 'Access_to_VR_Equipment', 'Collaborat
 for col in binary_cols:
     data[col] = data[col].map({'Yes': 1, 'No': 0})
 
+numeric_cols = data.select_dtypes(include=[np.number]).columns.tolist()
+categorical_cols = ['Gender', 'Grade_Level', 'Field_of_Study', 'Subject', 'Region', 'School_Support_for_VR_in_Curriculum']
+
 # Define preprocessing for numeric columns: impute missing values then scale them
 numeric_transformer = Pipeline(steps=[
     ('imputer', SimpleImputer(strategy='mean')),  # Imputing missing values with the mean
@@ -126,6 +129,16 @@ r2 = r2_score(y_test, y_pred)
 print(f'MSE: {mse}, R2: {r2}')
 
 #%% Prediction Details per Cluster
+binary_cols = ['Usage_of_VR_in_Education', 'Access_to_VR_Equipment', 'Collaboration_with_Peers_via_VR', 
+               'Feedback_from_Educators_on_VR', 'Interest_in_Continuing_VR_Based_Learning', 
+               'School_Support_for_VR_in_Curriculum']
+for col in binary_cols:
+    data[col] = data[col].map({'Yes': 1, 'No': 0}).fillna(data[col])
+
+# Check for any remaining 'Yes' or 'No' values
+print("Check for 'Yes'/'No' values:", data[binary_cols].apply(lambda x: x.unique()))
+
+# Define columns for transformations
 categorical_features = [col for col in data.columns if data[col].dtype == 'object' and col not in ['Improvement_in_Learning_Outcomes', 'Cluster']]
 numerical_features = [col for col in data.columns if data[col].dtype in ['int64', 'float64'] and col not in ['Improvement_in_Learning_Outcomes', 'Cluster']]
 
@@ -154,16 +167,17 @@ for cluster in data['Cluster'].unique():
     cluster_data = data[data['Cluster'] == cluster]
     X_c = cluster_data.drop(['Improvement_in_Learning_Outcomes', 'Cluster'], axis=1)
     y_c = cluster_data['Improvement_in_Learning_Outcomes']
-    
+
     # Split the data into training and test sets
     X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(X_c, y_c, test_size=0.2, random_state=42)
-    
-    # Train the model
+
+    # Fit and evaluate the model
     model_pipeline.fit(X_train_c, y_train_c)
-    
+
     # Predict and evaluate the model
     y_pred_c = model_pipeline.predict(X_test_c)
     mse_c = mean_squared_error(y_test_c, y_pred_c)
     r2_c = r2_score(y_test_c, y_pred_c)
-    
+
     print(f"Cluster {cluster} - MSE: {mse_c:.2f}, R2: {r2_c:.2f}")
+# %%
