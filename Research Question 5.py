@@ -25,15 +25,6 @@ transformer = ColumnTransformer([("one_hot", one_hot, categorical_features)], re
 data_encoded = transformer.fit_transform(data)
 data_encoded = pd.DataFrame(data_encoded, columns=transformer.get_feature_names_out())
 
-#%% Exploratory Data Analysis (EDA)
-# Visualizing the distribution of student ages using a histogram
-plt.figure(figsize=(12, 8))
-sns.histplot(data['Age'], kde=True, element='step', color='teal')
-plt.title('Distribution of Student Ages')
-plt.xlabel('Age')
-plt.ylabel('Count')
-plt.show()
-
 #%% Correlation Heatmap
 # Extracting only numeric data for correlation analysis
 numeric_data = data.select_dtypes(include=[np.number])
@@ -97,6 +88,7 @@ plt.xlabel('Hours of VR Usage Per Week')
 plt.ylabel('Engagement Level')
 plt.legend(title='Cluster')
 plt.show()
+
 
 #%% Predictive Modeling
 # Replacing categorical 'Yes'/'No' values with numerical 1/0 for all columns
@@ -180,4 +172,18 @@ for cluster in data['Cluster'].unique():
     r2_c = r2_score(y_test_c, y_pred_c)
 
     print(f"Cluster {cluster} - MSE: {mse_c:.2f}, R2: {r2_c:.2f}")
+#%%
+# Analyzing the correlation directly
+for cluster in data['Cluster'].unique():
+    cluster_data = data[data['Cluster'] == cluster]
+    correlation = cluster_data[['Engagement_Level', 'Improvement_in_Learning_Outcomes']].corr()
+    print(f"Cluster {cluster} - Correlation between Engagement Level and Academic Outcomes:\n{correlation}")
+
+    # Plotting
+    plt.figure(figsize=(6, 4))
+    sns.scatterplot(x='Engagement_Level', y='Improvement_in_Learning_Outcomes', data=cluster_data)
+    plt.title(f'Cluster {cluster}: VR Engagement vs Academic Outcomes')
+    plt.xlabel('VR Engagement Level')
+    plt.ylabel('Improvement in Learning Outcomes')
+    plt.show()
 # %%
