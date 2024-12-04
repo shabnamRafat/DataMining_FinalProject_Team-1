@@ -1,0 +1,24 @@
+Topic Proposal
+
+Title: Clustering Analysis of VR Learning Patterns and Student Profiles
+Team members: Uyemaa Gantulga, Shabnam Rafat Ummey Sawda,  Ismail Sarfaraz, Jahnavi Vallepalli
+
+a) Research Topic:
+The goal of this research is to use clustering analysis to identify distinct patterns of VR usage and associated learning behaviors among students with varying demographic profiles. By grouping students based on characteristics such as VR engagement levels, hours of usage, perceived creativity, and stress levels, the study aims to reveal meaningful clusters that differentiate unique student profiles. This analysis seeks to understand how specific demographic factors, such as age, grade level, and field of study, influence VR usage patterns and learning experiences. Identifying these clusters will provide insights into the types of students who benefit most from VR-based learning and their engagement preferences. Ultimately, the study aims to guide the development of personalized VR learning programs that cater to the needs of different student segments, enhancing the effectiveness of VR as an educational tool.
+
+b) Research Questions:
+
+1) How does the instructor's VR proficiency affect students' improvement in learning outcomes?​
+2) What are the key distinguishing features between high-performing and low-performing clusters? 
+3) How do cluster characteristics vary across different regional and support system contexts?
+4) How do engagement levels in VR correlate with academic outcomes within each identified cluster?
+
+c) Source of Dataset:
+https://www.kaggle.com/datasets/waqi786/impact-of-virtual-reality-on-education/data
+
+d) Link to GitHub Repository:
+https://github.com/shabnamRafat/DataMining_FinalProject_Team-1
+
+e) Modeling Methods:
+
+●	K-Means Clustering and other potential modeling methods to add in the future
