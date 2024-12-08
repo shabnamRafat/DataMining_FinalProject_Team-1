@@ -11,9 +11,21 @@ import statsmodels.api as sm
 from statsmodels.formula.api import ols
 from tabulate import tabulate
 
+import EDA_VR
+
 import warnings
 
 warnings.filterwarnings('ignore')
+
+
+if __name__ == "__main__":
+    # This will only run if my_module.py is run directly
+    print("All the relevant files have been imported!")
+
+#%%
+print(EDA_VR.variables.values)
+
+
 
 #%%
 vr_in_education = pd.read_csv('Virtual_Reality_in_Education_Impact.csv')
@@ -738,7 +750,7 @@ print(region_comparison)
 #%%
 
 # Identify the unique clusters (for example, based on the 'Region' or any other clustering method)
-clusters = vr_in_education['Cluster'].unique()
+clusters_region = vr_in_education['Cluster_Region'].unique()
 
 # Dictionary to store the results of ANOVA
 anova_results = {}
@@ -746,7 +758,7 @@ anova_results = {}
 # Loop over each distinguishing feature and perform ANOVA for each cluster
 for feature in distinguishing_features:
     # List to store the data for each cluster for the current feature
-    cluster_data = [vr_in_education[vr_in_education['Cluster'] == cluster][feature] for cluster in clusters]
+    cluster_data = [vr_in_education[vr_in_education['Cluster_Region'] == cluster][feature] for cluster in clusters_region]
     
     # Perform ANOVA
     f_stat, p_value = stats.f_oneway(*cluster_data)
@@ -833,4 +845,75 @@ print(test_results_df)
 
 
 
+# %%
+
+
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Assuming your data is loaded into a pandas DataFrame 'df'
+# Preprocessing: Convert categorical variables to numeric (e.g., One-Hot Encoding)
+
+df_without_region = vr_in_education_copy.drop('Region', axis=1)
+
+df_encoded = pd.get_dummies(vr_in_education_copy, drop_first=True)
+
+X = df_encoded  # all features, after one-hot encoding
+y = vr_in_education_copy['Region']  # target variable
+
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Initialize the Random Forest classifier
+rf = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# Train the model
+rf.fit(X_train, y_train)
+
+# Make predictions
+y_pred = rf.predict(X_test)
+
+# Evaluate the model
+accuracy = accuracy_score(y_test, y_pred)
+print(f'Accuracy: {accuracy}')
+
+# %%
+print(df_encoded.columns)
+
+# %%
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+# Assuming you have the clusters assigned as 'Cluster' column in the dataframe
+# Features to test
+features = [
+    'Usage_of_VR_in_Education', 'Hours_of_VR_Usage_Per_Week', 'Instructor_VR_Proficiency',
+    'Access_to_VR_Equipment', 'School_Support_for_VR_in_Curriculum', 'Collaboration_with_Peers_via_VR',
+    'Stress_Level_with_VR_Usage', 'Feedback_from_Educators_on_VR', 'Interest_in_Continuing_VR_Based_Learning',
+    'Perceived_Effectiveness_of_VR'
+]
+
+# Loop through each feature and perform ANOVA
+for feature in features:
+    # Group the data by clusters and extract the feature values
+    groups = [vr_in_education_copy[vr_in_education_copy['Region'] == i][feature].dropna() for i in vr_in_education_copy['Region'].unique()]
+    
+    # Perform ANOVA
+    f_stat, p_value = stats.f_oneway(*groups)
+    
+    print(f"Feature: {feature}")
+    print(f"F-statistic: {f_stat}, P-value: {p_value}")
+    
+    # Check if the result is significant
+    if p_value < 0.05:
+        print("There is a significant difference in means among the clusters.\n")
+    else:
+        print("There is no significant difference in means among the clusters.\n")
+
+# %%
+vr_in_education_copy.columns
 # %%
