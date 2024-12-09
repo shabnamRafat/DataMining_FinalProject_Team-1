@@ -10,10 +10,20 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler, LabelEncoder
 import statsmodels.api as sm
 from statsmodels.formula.api import ols
 from tabulate import tabulate
-
-import EDA_VR
-
+from sklearn.decomposition import PCA
+from scipy import stats 
+from scipy.stats import chi2_contingency, ttest_ind, f_oneway
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
+from sklearn.cluster import DBSCAN
 import warnings
+
+# Import other py files
+import EDA_VR
+import Hypothesis_Testing
 
 warnings.filterwarnings('ignore')
 
@@ -23,13 +33,14 @@ if __name__ == "__main__":
     print("All the relevant files have been imported!")
 
 #%%
+
+vr_in_education = EDA_VR.vr_in_education_copy
+vr_in_education_copy = vr_in_education.copy()
 print(EDA_VR.variables.values)
 
 
-
-
 #%%
-vr_in_education = EDA_VR.vr_in_education_copy
+
 
 
 #%%
@@ -107,7 +118,7 @@ print(f'High-performing cluster: {high_performing_cluster}')
 
 
 #%%
-from sklearn.decomposition import PCA
+
 
 # Identify the clusters and noise points
 clusters = vr_in_education['Cluster'].unique()
@@ -198,7 +209,7 @@ print(ttest_results_df)
 #%%
 
 # Define the columns and values for student attributes(group-1)
-student_attributes_group_1 = ['Gender','Grade_Level', 'Field_of_Study', 'Region', 'School_Support_for_VR_in_Curriculum']
+student_attributes_group_1 = ['Gender','Grade_Level', 'Field_of_Study', 'Region', 'School_Support_for_VR_in_Curriculum', 'Region', 'School_Support_for_VR_in_Curriculum']
 
 # Define a function to perform ANOVA test for different factors
 def perform_anova_test(df, distinguishing_features, factor_col):
@@ -216,73 +227,34 @@ for factor in student_attributes_group_1:
 
 # Display the results with p-values and interpretation
 for factor, results in anova_results.items():
-    print(f"ANOVA results for {factor}:")
-    print("\n")
+    print(f"\033[1;4mANOVA results for {factor}\033[0m:")
     for feature, result in results.items():
-        print(f"ANOVA results for {feature}:")
+        print(f"{feature}:")
         #print(result)
         p_value = result.iloc[0, -1]  # Extract the p-value
-        print(f"P-value: {p_value:.2f}")
+        print(f"• P-value: {p_value:.2f}")
         if p_value < 0.05:
-            print(f"Interpretation: There is a significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
+            print(f"• Interpretation: There is a significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
         else:
-            print(f"Interpretation: There is no significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
+            print(f"• Interpretation: There is no significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
+
+
 
 
 # %%[markdown]
 
 ##### **Q4: How do cluster characteristics vary across different regional and support system contexts?**
 
-
-#%%
-
-
-
-# Define the columns and values for student attributes(group-1)
-student_attributes_group_2 = ['Region', 'School_Support_for_VR_in_Curriculum']
-
-# Define a function to perform ANOVA test for different factors
-def perform_anova_test(df, distinguishing_features, factor_col):
-    anova_results = {}
-    for feature in distinguishing_features:
-        model = ols(f'{feature} ~ Cluster + C({factor_col}) + C(Usage_of_VR_in_Education)', data=df).fit()
-        anova_table = sm.stats.anova_lm(model, typ=2)
-        anova_results[feature] = anova_table
-    return anova_results
-
-# Perform ANOVA test for each different factor
-anova_results = {}
-for factor in student_attributes_group_2:
-    anova_results[factor] = perform_anova_test(vr_in_education, distinguishing_features, factor)
-
-# Display the results with p-values and interpretation
-for factor, results in anova_results.items():
-    print(f"ANOVA results for {factor}:")
-    print("\n")
-    for feature, result in results.items():
-        print(f"ANOVA results for {feature}:")
-        #print(result)
-        p_value = result.iloc[0, -1]  # Extract the p-value
-        print(f"P-value: {p_value:.2f}")
-        if p_value < 0.05:
-            print(f"Interpretation: There is a significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
-        else:
-            print(f"Interpretation: There is no significant difference in {feature} across {factor} based on VR usage between high and low performing clusters.\n")
-
+##### **Answer:**
+# <u>Cluster characteristics across regions: </u></br>
 
 
 #%%
-
-from scipy.cluster.hierarchy import linkage, dendrogram, fcluster
-
-
-
-
-# %%
-
-from sklearn.cluster import DBSCAN
 # Select the region column for clustering
 region_column = ['Region']
+print(f"Regions: {vr_in_education['Region'].unique()}")
+
+#%%
 
 # Encode the 'Region' column
 label_encoder = LabelEncoder()
@@ -313,9 +285,6 @@ print(f'Silhouette Score: {silhouette_avg}')
 
 
 #%%
-
-
-
 # Compare distinguishing features between the regions (clusters)
 region_clusters = vr_in_education['Region_Encoded'].unique()
 
@@ -362,8 +331,8 @@ anova_results_df = pd.DataFrame.from_dict(anova_results, orient='index')
 # Display the results
 print(anova_results_df)
 
-
-
+#%%[markdown]
+# <u>Cluster characteristics based on support system of school: </u></br>
 
 
 #%%
@@ -430,77 +399,3 @@ for feature in distinguishing_features:
 test_results_df = pd.DataFrame(test_results).T
 print(test_results_df)
 
-
-
-# %%
-
-
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
-
-# Assuming your data is loaded into a pandas DataFrame 'df'
-# Preprocessing: Convert categorical variables to numeric (e.g., One-Hot Encoding)
-
-df_without_region = vr_in_education_copy.drop('Region', axis=1)
-
-df_encoded = pd.get_dummies(vr_in_education_copy, drop_first=True)
-
-X = df_encoded  # all features, after one-hot encoding
-y = vr_in_education_copy['Region']  # target variable
-
-
-# Split the data into training and test sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
-# Initialize the Random Forest classifier
-rf = RandomForestClassifier(n_estimators=100, random_state=42)
-
-# Train the model
-rf.fit(X_train, y_train)
-
-# Make predictions
-y_pred = rf.predict(X_test)
-
-# Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
-print(f'Accuracy: {accuracy}')
-
-# %%
-print(df_encoded.columns)
-
-# %%
-import numpy as np
-import pandas as pd
-from scipy import stats
-
-# Assuming you have the clusters assigned as 'Cluster' column in the dataframe
-# Features to test
-features = [
-    'Usage_of_VR_in_Education', 'Hours_of_VR_Usage_Per_Week', 'Instructor_VR_Proficiency',
-    'Access_to_VR_Equipment', 'School_Support_for_VR_in_Curriculum', 'Collaboration_with_Peers_via_VR',
-    'Stress_Level_with_VR_Usage', 'Feedback_from_Educators_on_VR', 'Interest_in_Continuing_VR_Based_Learning',
-    'Perceived_Effectiveness_of_VR'
-]
-
-# Loop through each feature and perform ANOVA
-for feature in features:
-    # Group the data by clusters and extract the feature values
-    groups = [vr_in_education_copy[vr_in_education_copy['Region'] == i][feature].dropna() for i in vr_in_education_copy['Region'].unique()]
-    
-    # Perform ANOVA
-    f_stat, p_value = stats.f_oneway(*groups)
-    
-    print(f"Feature: {feature}")
-    print(f"F-statistic: {f_stat}, P-value: {p_value}")
-    
-    # Check if the result is significant
-    if p_value < 0.05:
-        print("There is a significant difference in means among the clusters.\n")
-    else:
-        print("There is no significant difference in means among the clusters.\n")
-
-# %%
-vr_in_education_copy.columns
-# %%
