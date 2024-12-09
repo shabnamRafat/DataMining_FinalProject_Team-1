@@ -5,8 +5,6 @@
 
 data['Improvement_in_Learning_Outcomes'] = data['Improvement_in_Learning_Outcomes'].map({'Yes': 1, 'No': 0})
 
-
-
 # Grouping the data by Instructor VR Proficiency and extracting the 'Improvement_in_Learning_Outcomes' and performing One-Way ANOVA
 
 grouped = [data[data['Instructor_VR_Proficiency'] == proficiency]['Improvement_in_Learning_Outcomes'] 
