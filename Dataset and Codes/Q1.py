@@ -1,7 +1,7 @@
 
 
 
-
+# Converting 'Improvement_in_Learning_Outcomes' from 'Yes'/'No' to 1/0
 
 data['Improvement_in_Learning_Outcomes'] = data['Improvement_in_Learning_Outcomes'].map({'Yes': 1, 'No': 0})
 
