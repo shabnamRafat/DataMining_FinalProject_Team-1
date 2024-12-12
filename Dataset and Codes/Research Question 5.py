@@ -14,11 +14,15 @@ from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.decomposition import PCA
+import EDA_VR
+
+import warnings
+warnings.filterwarnings('ignore')
 
 
 
 #%% Load Data
-data = pd.read_csv('Virtual_Reality_in_Education_Features.csv')
+data = EDA_VR.vr_in_education
 
 
 
